@@ -13,15 +13,20 @@ const io = socketio(httpServer);
 //Port
 const PORT = 4000;
 
-//Sets
+//Static serving
 app.set('view engine',"ejs");
-console.log(path.join(__dirname,"public"));
+app.use(express.static(path.join(__dirname,"public")));
 
-app.set(express.static(path.join(__dirname,"public")));
+//Socket io connection 
+io.on("connection",function(socket){
+  socket.on("send-location",(data)=>{
+     io.emit("receive-location",{id : socket.id,  ...data});
+  })
+})
 
 //API calls
-app.get("/", (req,res)=>{
-    res.send("API called");
+app.get("/", function(req,res){
+    res.render("index");
 })
 
 //Server listen
